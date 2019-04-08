@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ajaxian | ajaxian</title>
+	<title>ajaxios | ajaxios</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -879,7 +879,7 @@ img { max-width: 100%; }
 		<div class="container">
 			<div class="table-wrap">
 				<div class="table-cell">
-					<strong><a href="index.html">ajaxian</a></strong>
+					<strong><a href="index.html">ajaxios</a></strong>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -915,51 +915,53 @@ img { max-width: 100%; }
 	<div class="content-wrap">
 		<div class="tsd-panel tsd-typography">
 			<h1 id="ajaxian">ajaxian</h1>
-			<p><a href="https://travis-ci.org/kofno/ajaxian"><img src="https://travis-ci.org/kofno/ajaxian.svg?branch=master" alt="Build Status"></a>
+			<p><a href="https://travis-ci.org/kofno/ajaxios"><img src="https://travis-ci.org/kofno/ajaxios.svg?branch=master" alt="Build Status"></a>
 			<a href="https://github.com/semantic-release/semantic-release"><img src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?style=flat-square" alt="semantic-release"></a></p>
-			<p>Ajaxian is a small wrapper around the XMLHttpRequest object. It borrows heavily
-				from the Elm Http module. In many ways it&#39;s not all that different from other
-				http libraries: build a request, send it to the server, and then handle the
-				response. The emphasis here is on handling error responses correctly and
-			consistently, without resorting to thrown exceptions.</p>
-			<p>Because it uses XMLHttpRequest, Ajaxian can only be used from the browser (or
-				a browser-like environment, like Electron). Browserify, Webpack, or some similar
-			tool may be required when packaging for deploy.</p>
+			<p>Ajaxios is a fork of Ajaxian. The key differenence is that, where Ajaxian wraps
+				XMLHttpRequest and only works in browsers, Ajaxios wraps the Axios library so
+				that it can work in browsers or Node. This means that the Ajaxios is suitable
+			for use in server side rendering or in a Node server or Lambda.</p>
+			<p><a href="https://www.npmjs.com/package/axios">More about the Axios library</a>.</p>
+			<p>Ajaxios is NOT a drop-in replacement for Ajaxian. They are very similar APIs,
+				but some concessions have been made to how Axios works differently then the
+			XMLHttpRequest.</p>
+			<p>Ajaxios borrows heavily from the Elm Http module. In many ways it&#39;s not all
+				that different from other http libraries: build a request, send it to the
+				server, and then handle the response. The emphasis here is on handling error
+			responses correctly and consistently, without resorting to thrown exceptions.</p>
 			<h2 id="tasks">tasks</h2>
-			<p>Instead of Promises, Ajaxian uses Futures (here called Tasks, from the
+			<p>Instead of Promises, Ajaxios uses Futures (here called Tasks, from the
 				Taskarian library). Tasks are lazy and will not execute until forked. This
-				means a Task can be returned from a pure function. Tasks are also composable.
+				means a Task can be returned from a pure function. Tasks are also composeable.
 				You can build a complex chain of behaviors, while strictly controlling exactly
 				when the side effects happen. In this way I prefer them over Promises, which
 			are stateful and initiate side effects as soon as they are instantiated.</p>
 			<h2 id="errors">errors</h2>
-			<p>Ajaxian does not throw errors for failed requests. Instead, failed requests
+			<p>Ajaxios does not throw errors for failed requests. Instead, failed requests
 				are returned as one of several different types of errors. Error conditions
 				are documented this way because I believe that you create a better user
 				experience when you handle error conditions gracefully. I want to provide
 			the tools for doing that.</p>
 			<p>All of the error types are documented in the HttpError module.</p>
 			<h2 id="decoders">decoders</h2>
-			<p>Decoders are another idea stolen from Elm. A decoder is a function that converts
+			<p>Decoders are another idea stolen from Elm. A decoder is a monad that converts
 				the response body of a request into a data structure that can be used by the
 			application.</p>
-			<p>Ajaxian expects the decoder to return the results wrapped in a Result object.
-				If the data passes muster, then the decoder should return the data wrapped in
-				an Ok object. If the data is incorrect, then an error message wrapped will be
-			wrapped in an Err object. This will result in a BadPayload error.</p>
-			<p>If you are building a json heavy application, I would recommend checking out
-				<a href="https://github.com/kofno/jsonous">jsonous</a>. This library is specifically
-			built for creating composable decoders for handling json content.</p>
+			<p>Ajaxios uses Jsonous (as a peer dependency) to describe decoders.</p>
+			<p>If the data passes muster, then the decoder returns the data wrapped in
+				an Ok object. If the data is incorrect, then an error message will be
+				wrapped in an Err object and Ajaxios will return the result as a BadPayload
+			error.</p>
 			<h1 id="installing">installing</h1>
 			<blockquote>
-				<p>npm install --save ajaxian</p>
+				<p>npm install --save ajaxios</p>
 			</blockquote>
 			<blockquote>
-				<p>yarn add ajaxian</p>
+				<p>yarn add ajaxios</p>
 			</blockquote>
 			<h1 id="usage">usage</h1>
-			<pre><code><span class="hljs-keyword">import</span> { toHttpTask, Request, header } <span class="hljs-keyword">from</span> <span class="hljs-string">'ajaxian'</span>;
-<span class="hljs-keyword">import</span> { ok } <span class="hljs-keyword">from</span> <span class="hljs-string">'resulty'</span>;
+			<pre><code><span class="hljs-keyword">import</span> { toHttpTask, Request, header } <span class="hljs-keyword">from</span> <span class="hljs-string">'ajaxios'</span>;
+<span class="hljs-keyword">import</span> { succeed } <span class="hljs-keyword">from</span> <span class="hljs-string">'jsonous'</span>;
 
 <span class="hljs-comment">// Create a request object. This is a TS example.</span>
 <span class="hljs-keyword">const</span> request: Request&lt;{}&gt; = {
@@ -969,27 +971,24 @@ img { max-width: 100%; }
   timeout: <span class="hljs-number">0</span>,
   headers: [header(<span class="hljs-string">'X-Some-Header'</span>, <span class="hljs-string">'baz'</span>)],
   withCredentials: <span class="hljs-literal">true</span>,
-  decoder: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> ok({}),
+  decoder: succeed({}),
 };
 
 toHttpTask(request).fork(
   <span class="hljs-function"><span class="hljs-params">err</span> =&gt;</span> <span class="hljs-built_in">console</span>.error(err),
   <span class="hljs-function"><span class="hljs-params">data</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Success!"</span>, data)
-);
-</code></pre><p>There are some convenience builders for making requests, too:</p>
-			<pre><code><span class="hljs-keyword">import</span> { post } <span class="hljs-keyword">from</span> <span class="hljs-string">'ajaxian'</span>;
+);</code></pre><p>There are some convenience builders for making requests, too:</p>
+			<pre><code><span class="hljs-keyword">import</span> { post } <span class="hljs-keyword">from</span> <span class="hljs-string">'ajaxios'</span>;
 
-const request = post(<span class="hljs-string">'/some_end_point'</span>, { foo: bar }, <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> ok({}))
-  .withHeader(header(<span class="hljs-string">'X-Some-Header'</span>, <span class="hljs-string">'baz'</span>));
-</code></pre><p>It is also possible to abort an HTTP request before it completes. Forking the
+<span class="hljs-keyword">const</span> request = post(<span class="hljs-string">'/some_end_point'</span>, { <span class="hljs-attr">foo</span>: bar }, succeed({}))
+  .withHeader(header(<span class="hljs-string">'X-Some-Header'</span>, <span class="hljs-string">'baz'</span>));</code></pre><p>It is also possible to abort an HTTP request before it completes. Forking the
 			HTTP task returns an abort function from the underlying HTTP request object:</p>
 			<pre><code><span class="hljs-keyword">const</span> cancel = toHttpTask(request).fork(
   <span class="hljs-function"><span class="hljs-params">err</span> =&gt;</span> <span class="hljs-built_in">console</span>.error(err),
   <span class="hljs-function"><span class="hljs-params">data</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Success!"</span>, data),
 );
 
-cancel() <span class="hljs-comment">// &lt;-- aborts request</span>
-</code></pre>
+cancel() <span class="hljs-comment">// &lt;-- aborts request</span></code></pre>
 		</div>
 		<div style="position:relative;"><a name="typedoc-main-index" class="tsd-anchor"></a></div>
 		<section class="tsd-panel-group tsd-index-group">
