@@ -1,6 +1,6 @@
-import { ok } from 'resulty';
-import Request, { DecoderFn, Method } from './Request';
+import Decoder, { succeed } from 'jsonous';
 import { Header } from './Headers';
+import Request, { Method } from './Request';
 
 /**
  * A different approach to building a request object. Instead of object
@@ -39,7 +39,7 @@ export class RequestBuilder<A> {
     return this.request.withCredentials;
   }
 
-  get decoder(): DecoderFn<A> {
+  get decoder(): Decoder<A> {
     return this.request.decoder;
   }
 
@@ -55,14 +55,14 @@ export class RequestBuilder<A> {
     return new RequestBuilder({ ...this.request, withCredentials });
   }
 
-  public withDecoder<B>(decoder: DecoderFn<B>): RequestBuilder<B> {
+  public withDecoder<B>(decoder: Decoder<B>): RequestBuilder<B> {
     return new RequestBuilder({ ...this.request, decoder });
   }
 
   public withHeader(header: Header): RequestBuilder<A> {
     return new RequestBuilder({
       ...this.request,
-      headers: [ ...this.request.headers, header ],
+      headers: [...this.request.headers, header],
     });
   }
 }
@@ -72,10 +72,10 @@ export default RequestBuilder;
 /**
  * A convenient function for creating a basic get request.
  */
-export function get(url: string): RequestBuilder<string> {
-  return new RequestBuilder<string>({
+export function get(url: string): RequestBuilder<unknown> {
+  return new RequestBuilder({
     url,
-    decoder: ok,
+    decoder: succeed({}),
     method: 'get',
     timeout: 0,
     data: '',
@@ -87,10 +87,10 @@ export function get(url: string): RequestBuilder<string> {
 /**
  * A convenient function for creating a basic post request.
  */
-export function post(url: string): RequestBuilder<string> {
+export function post(url: string): RequestBuilder<unknown> {
   return new RequestBuilder({
     url,
-    decoder: ok,
+    decoder: succeed({}),
     data: {},
     method: 'post',
     timeout: 0,
@@ -102,10 +102,10 @@ export function post(url: string): RequestBuilder<string> {
 /**
  * A convenient function for creating a basic put request.
  */
-export function put(url: string): RequestBuilder<string> {
+export function put(url: string): RequestBuilder<unknown> {
   return new RequestBuilder({
     url,
-    decoder: ok,
+    decoder: succeed({}),
     data: {},
     method: 'put',
     timeout: 0,
@@ -117,10 +117,10 @@ export function put(url: string): RequestBuilder<string> {
 /**
  * A convenient function for create a basic delete request.
  */
-export function del(url: string): RequestBuilder<string> {
+export function del(url: string): RequestBuilder<unknown> {
   return new RequestBuilder({
     url,
-    decoder: ok,
+    decoder: succeed({}),
     data: {},
     method: 'delete',
     timeout: 0,

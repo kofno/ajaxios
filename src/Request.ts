@@ -1,7 +1,5 @@
-import { Result } from 'resulty';
+import Decoder from 'jsonous';
 import { Header } from './Headers';
-
-export type DecoderFn<A> = (json: string) => Result<string, A>;
 
 export type Method = 'get' | 'post' | 'put' | 'patch' | 'head' | 'options' | 'delete';
 
@@ -12,7 +10,7 @@ export interface Request<A> {
   timeout: number;
   headers: Header[];
   withCredentials: boolean;
-  decoder: DecoderFn<A>;
+  decoder: Decoder<A>;
 }
 
 export default Request;

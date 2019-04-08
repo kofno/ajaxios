@@ -4,7 +4,7 @@ import { Header } from './Headers';
  * The response from an ajax request
  */
 export interface AjaxResponse {
-  body: string;
+  body: unknown;
   status: number;
   statusText: string;
   headers: Header[];

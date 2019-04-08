@@ -1,8 +1,8 @@
-import { err, ok } from 'resulty';
+import { fail, succeed } from 'jsonous';
+import { toHttpResponseTask } from '../src';
 import { toHttpTask } from './../src/Http';
 import { Method, Request } from './../src/Request';
 import { get } from './../src/RequestBuilder';
-import { toHttpResponseTask } from '../src';
 
 const aGetRequest: Request<string> = {
   method: 'get' as Method,
@@ -11,7 +11,7 @@ const aGetRequest: Request<string> = {
   timeout: 0,
   headers: [],
   withCredentials: false,
-  decoder: () => ok('foo'),
+  decoder: succeed('foo'),
 };
 
 const aFailedGetRequest = {
@@ -21,7 +21,7 @@ const aFailedGetRequest = {
   timeout: 0,
   headers: [],
   withCredentials: false,
-  decoder: () => err('Bad mojo'),
+  decoder: fail('Bad mojo'),
 };
 
 describe('toHttpResponseTask', () => {

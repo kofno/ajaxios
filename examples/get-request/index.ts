@@ -1,5 +1,4 @@
-import { field, string } from 'jsonous';
-import Decoder from 'jsonous/Decoder';
+import Decoder, { field, string } from 'jsonous';
 import { get, Request, toHttpTask } from './../../src/index';
 
 const decoder: Decoder<string> = field('title', string);
@@ -11,10 +10,10 @@ const request: Request<string> = {
   data: {},
   timeout: 0,
   headers: [],
-  decoder: decoder.toJsonFn(),
+  decoder,
 };
 
-get('/foo').withDecoder(decoder.toJsonFn());
+get('/foo').withDecoder(decoder);
 
 // tslint:disable-next-line:no-console
 toHttpTask(request).fork(e => console.error(e), data => console.log('Success:', data));

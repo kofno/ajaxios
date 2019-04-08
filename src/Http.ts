@@ -1,50 +1,64 @@
+import axios, { AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios';
+import Decoder from 'jsonous';
 import { err, ok, Result } from 'resulty';
 import Task, { Reject, Resolve } from 'taskarian';
 import AjaxResponse from './AjaxResponse';
-import { Header, parseHeaders } from './Headers';
-import { badPayload, badStatus, badUrl, HttpError, networkError, timeout } from './HttpError';
+import { convertHeaderObject } from './Headers';
+import { badPayload, badStatus, HttpError, networkError, timeout } from './HttpError';
 import { httpSuccess, HttpSuccess } from './HttpSuccess';
-import { DecoderFn, Request } from './Request';
+import { Request } from './Request';
 
-function send(xhr: XMLHttpRequest, data: any) {
-  if (data) {
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(typeof data === 'string' ? data : JSON.stringify(data));
-  } else {
-    xhr.send();
-  }
+function handleResponse<A>(
+  axioResponse: AxiosResponse<unknown>,
+  decoder: Decoder<A>,
+): Result<HttpError, HttpSuccess<A>> {
+  const response: AjaxResponse = {
+    body: axioResponse.data,
+    headers: convertHeaderObject(axioResponse.headers),
+    status: axioResponse.status,
+    statusText: axioResponse.statusText,
+  };
+  const result = decoder.decodeAny(axioResponse.data);
+  return result.cata({
+    Err: error => err(badPayload(error, response)),
+    Ok: r => ok(httpSuccess(response, r)),
+  });
 }
 
-const handleResponse = <A>(
-  xhr: XMLHttpRequest,
-  decoder: DecoderFn<A>,
-): Result<HttpError, HttpSuccess<A>> => {
-  const response: AjaxResponse = {
-    body: xhr.response,
-    headers: parseHeaders(xhr.getAllResponseHeaders()),
-    status: xhr.status,
-    statusText: xhr.statusText,
+function configureRequest<A>(request: Request<A>, cancelToken: CancelToken): AxiosRequestConfig {
+  return {
+    url: request.url,
+    method: request.method,
+    data: request.data,
+    timeout: request.timeout,
+    withCredentials: request.withCredentials,
+    headers: request.headers.reduce(
+      (memo, header) => ({
+        ...memo,
+        ...header,
+      }),
+      [],
+    ),
+    cancelToken,
   };
+}
 
-  if (xhr.status < 200 || xhr.status >= 300) {
-    response.body = xhr.responseText;
-    return err(badStatus(response));
-  } else {
-    const result = decoder(response.body);
-    return result.cata({
-      Err: error => err(badPayload(error, response)),
-      Ok: r => ok(httpSuccess(response, r)),
+function handleRequestError(err: any): HttpError {
+  if (axios.isCancel(err)) {
+    return networkError();
+  } else if (err.response) {
+    const response = err.response as AxiosResponse;
+    return badStatus({
+      body: response.data,
+      status: response.status,
+      statusText: response.statusText,
+      headers: convertHeaderObject(response.headers),
     });
+  } else if (err.code && err.code === 'ECONNABORTED') {
+    return timeout();
+  } else {
+    return networkError();
   }
-};
-
-function configureRequest<A>(xhr: XMLHttpRequest, request: Request<A>): void {
-  xhr.setRequestHeader('Accept', 'application/json');
-  request.headers.forEach((header: Header) => {
-    xhr.setRequestHeader(header.field, header.value);
-  });
-  xhr.withCredentials = request.withCredentials;
-  xhr.timeout = request.timeout || 0;
 }
 
 /*
@@ -56,28 +70,15 @@ function configureRequest<A>(xhr: XMLHttpRequest, request: Request<A>): void {
  * A failed request results in an HttpError.
  */
 export function toHttpResponseTask<A>(request: Request<A>): Task<HttpError, HttpSuccess<A>> {
-  return new Task((reject: Reject<HttpError>, resolve: Resolve<HttpSuccess<A>>) => {
-    const xhr = new XMLHttpRequest();
-
-    xhr.addEventListener('error', () => reject(networkError()));
-    xhr.addEventListener('timeout', () => reject(timeout()));
-    xhr.addEventListener('load', () => {
-      return handleResponse(xhr, request.decoder).cata({
-        Err: e => reject(e),
-        Ok: d => resolve(d),
-      });
-    });
-
-    try {
-      xhr.open(request.method, request.url, true);
-    } catch (e) {
-      reject(badUrl(request.url));
-    }
-
-    configureRequest(xhr, request);
-    send(xhr, request.data);
-
-    return xhr.abort;
+  return new Task((reject, resolve) => {
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    const axiosReq = configureRequest(request, source.token);
+    axios(axiosReq)
+      .then(resp => handleResponse(resp, request.decoder))
+      .then(result => result.cata({ Ok: resolve, Err: reject }))
+      .catch(err => reject(handleRequestError(err)));
+    return () => source.cancel('Request cancelled');
   });
 }
 
@@ -88,8 +89,9 @@ export function toHttpResponseTask<A>(request: Request<A>): Task<HttpError, Http
  *
  * A failed request will result in an HttpError object.
  */
-export const toHttpTask = <A>(request: Request<A>): Task<HttpError, A> =>
-  toHttpResponseTask(request).map(r => r.result);
+export function toHttpTask<A>(request: Request<A>): Task<HttpError, A> {
+  return toHttpResponseTask(request).map(r => r.result);
+}
 
 /**
  * Convenience function that will help make switch statements exhaustive
