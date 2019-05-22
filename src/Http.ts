@@ -3,7 +3,7 @@ import Decoder from 'jsonous';
 import { err, ok, Result } from 'resulty';
 import Task, { Reject, Resolve } from 'taskarian';
 import AjaxResponse from './AjaxResponse';
-import { convertHeaderObject } from './Headers';
+import { convertHeaderObject, Header } from './Headers';
 import { badPayload, badStatus, HttpError, networkError, timeout } from './HttpError';
 import { httpSuccess, HttpSuccess } from './HttpSuccess';
 import { Request } from './Request';
@@ -25,6 +25,11 @@ function handleResponse<A>(
   });
 }
 
+function headerReducer(memo: any, header: Header): any {
+  memo[header.field] = header.value;
+  return memo;
+}
+
 function configureRequest<A>(request: Request<A>, cancelToken: CancelToken): AxiosRequestConfig {
   return {
     url: request.url,
@@ -32,13 +37,7 @@ function configureRequest<A>(request: Request<A>, cancelToken: CancelToken): Axi
     data: request.data,
     timeout: request.timeout,
     withCredentials: request.withCredentials,
-    headers: request.headers.reduce(
-      (memo, header) => ({
-        ...memo,
-        ...header,
-      }),
-      [],
-    ),
+    headers: request.headers.reduce(headerReducer, {}),
     cancelToken,
   };
 }
