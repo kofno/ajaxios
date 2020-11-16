@@ -1,12 +1,11 @@
 language: node_js
-  - 14
 dist: xenial
 services:
   - xvfb
 notifications:
   email: false
 node_js:
-  - "node"
+  - 14
 script:
   - xvfb-run -a npm run build
 after_success:
