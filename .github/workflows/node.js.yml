@@ -28,6 +28,8 @@ jobs:
         with:
           working-directory: ./ #optional
           run: yarn run test
+      - name: Build
+        run: yarn run build
       - name: Release
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
