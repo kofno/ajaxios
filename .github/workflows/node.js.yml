@@ -27,4 +27,4 @@ jobs:
         uses: GabrielBB/xvfb-action@v1
         with:
           working-directory: ./ #optional
-          run: yarn install && yarn run test
+          run: yarn && yarn run test
