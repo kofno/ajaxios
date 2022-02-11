@@ -18,7 +18,7 @@
     "axios": "^0.19.0",
     "jasmine": "^2.6.0",
     "jsonous": "^5.1.0",
-    "karma": "^4.4",
+    "karma": "^6.3",
     "karma-chrome-launcher": "^3.0",
     "karma-firefox-launcher": "^1.0",
     "karma-jasmine": "^3.1",
