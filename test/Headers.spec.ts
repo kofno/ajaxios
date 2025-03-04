@@ -1,4 +1,5 @@
-import { parseHeaders } from './../src/Headers';
+import { describe, expect, it } from 'bun:test';
+import { parseHeaders } from '../src/Headers';
 
 const exampleHeaders = 'foo:bar\r\nbaz:boom';
 

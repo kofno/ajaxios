@@ -75,7 +75,7 @@ export default RequestBuilder;
 export function get(url: string): RequestBuilder<unknown> {
   return new RequestBuilder({
     url,
-    decoder: succeed({}),
+    decoder: succeed({} as unknown),
     method: 'get',
     timeout: 0,
     data: '',
@@ -90,7 +90,7 @@ export function get(url: string): RequestBuilder<unknown> {
 export function post(url: string): RequestBuilder<unknown> {
   return new RequestBuilder({
     url,
-    decoder: succeed({}),
+    decoder: succeed({} as unknown),
     data: {},
     method: 'post',
     timeout: 0,
@@ -105,7 +105,7 @@ export function post(url: string): RequestBuilder<unknown> {
 export function put(url: string): RequestBuilder<unknown> {
   return new RequestBuilder({
     url,
-    decoder: succeed({}),
+    decoder: succeed({} as unknown),
     data: {},
     method: 'put',
     timeout: 0,
@@ -120,7 +120,7 @@ export function put(url: string): RequestBuilder<unknown> {
 export function del(url: string): RequestBuilder<unknown> {
   return new RequestBuilder({
     url,
-    decoder: succeed({}),
+    decoder: succeed({} as unknown),
     data: {},
     method: 'delete',
     timeout: 0,

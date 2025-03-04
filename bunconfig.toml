@@ -1,0 +1,5 @@
+# bunfig.toml
+[test]
+# you can define custom coverage threshold
+# See https://bun.sh/docs/test/coverage
+coverage = { threshold = 0.8 }

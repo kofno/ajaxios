@@ -1,46 +1,51 @@
 {
   "name": "ajaxios",
-  "version": "0.0.0-development",
+  "version": "3.0.0",
   "description": "Http requests with better error handling",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "author": "Ryan L. Bell <ryan.l.bell@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "docs": "typedoc --out docs --theme minimal && touch docs/.nojekyll",
-    "test": "karma start --single-run --browsers Firefox",
-    "build": "tsc",
-    "semantic-release": "semantic-release"
+    "docs": "typedoc src/index.ts --out docs --theme minimal && touch docs/.nojekyll",
+    "test": "bun test",
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "tsc --noEmit",
+    "format": "bun format --write ."
+  },
+  "dependencies": {
+    "axios": "^1.8.1",
+    "jsonous": "9.1.0",
+    "maybeasy": "^6.3.0",
+    "resulty": "^8.0.0",
+    "taskarian": "^6.1.0"
   },
   "devDependencies": {
-    "@types/jasmine": "^2.5.47",
-    "@types/tape": "^4.2.29",
-    "axios": "^0.19.0",
-    "jasmine": "^2.6.0",
-    "jsonous": "^5.1.0",
-    "karma": "^4.4",
-    "karma-chrome-launcher": "^3.0",
-    "karma-firefox-launcher": "^1.0",
-    "karma-jasmine": "^3.1",
-    "karma-typescript": "^5.0",
-    "maybeasy": "^2.6.0",
-    "resulty": "^3.0.0",
-    "semantic-release": "^17.2.3",
-    "tap-spec": "^4.1.1",
-    "tape": "^4.6.3",
-    "taskarian": "^3.0.0",
-    "ts-node": "^8.0.2",
-    "tslint": "^5.1.0",
-    "typedoc": "^0.14.2",
-    "typescript": "^3.0"
-  },
-  "peerDependencies": {
-    "jsonous": "^5.1.0",
-    "resulty": "^3.0.0",
-    "taskarian": "^3.0.0"
+    "typedoc": "^0.20.36",
+    "typescript": "^5.8.2",
+    "tsup": "^8.0.2",
+    "prettier": "^3.0.0",
+    "@types/bun": "^1.2.4"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/kofno/ajaxios.git"
+  },
+  "module": "dist/index.mjs",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "prettier": {
+    "singleQuote": true,
+    "semi": true,
+    "trailingComma": "all",
+    "tabWidth": 2,
+    "printWidth": 80
   }
 }
