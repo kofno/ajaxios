@@ -1,16 +1,22 @@
 import axios, { AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios';
-import Decoder from 'jsonous';
+import { Decoder } from 'jsonous';
 import { err, ok, Result } from 'resulty';
 import { Reject, Resolve, Task } from 'taskarian';
 import AjaxResponse from './AjaxResponse';
 import { convertHeaderObject, Header } from './Headers';
-import { badPayload, badStatus, HttpError, networkError, timeout } from './HttpError';
+import {
+  badPayload,
+  badStatus,
+  HttpError,
+  networkError,
+  timeout,
+} from './HttpError';
 import { httpSuccess, HttpSuccess } from './HttpSuccess';
 import { Request } from './Request';
 
 function handleResponse<A>(
   axioResponse: AxiosResponse<unknown>,
-  decoder: Decoder<A>
+  decoder: Decoder<A>,
 ): Result<HttpError, HttpSuccess<A>> {
   const response: AjaxResponse = {
     body: axioResponse.data,
@@ -30,7 +36,10 @@ function headerReducer(memo: any, header: Header): any {
   return memo;
 }
 
-function configureRequest<A>(request: Request<A>, cancelToken: CancelToken): AxiosRequestConfig {
+function configureRequest<A>(
+  request: Request<A>,
+  cancelToken: CancelToken,
+): AxiosRequestConfig {
   return {
     url: request.url,
     method: request.method,
@@ -68,7 +77,9 @@ function handleRequestError(err: any): HttpError {
  *
  * A failed request results in an HttpError.
  */
-export function toHttpResponseTask<A>(request: Request<A>): Task<HttpError, HttpSuccess<A>> {
+export function toHttpResponseTask<A>(
+  request: Request<A>,
+): Task<HttpError, HttpSuccess<A>> {
   return new Task((reject, resolve) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();

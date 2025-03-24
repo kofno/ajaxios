@@ -1,4 +1,4 @@
-import Decoder, { succeed } from 'jsonous';
+import { Decoder, succeed } from 'jsonous';
 import { Header } from './Headers';
 import Request, { Method } from './Request';
 
