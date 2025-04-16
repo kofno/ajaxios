@@ -1,6 +1,6 @@
 {
   "name": "ajaxios",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "description": "Http requests with better error handling",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,9 +17,9 @@
   "dependencies": {
     "axios": "^1.8.1",
     "jsonous": "^12.1.0",
-    "maybeasy": "^6.3.0",
+    "maybeasy": "^7.1.0",
     "resulty": "^8.0.0",
-    "taskarian": "^6.1.0"
+    "taskarian": "^7.0.1"
   },
   "devDependencies": {
     "typedoc": "^0.20.36",
